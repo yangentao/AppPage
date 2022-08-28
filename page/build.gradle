@@ -1,0 +1,20 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+ext {
+    nameGroup = "dev.entao.app"
+    nameVersion = "0.6.0"
+    nameAF = "page"
+    nameGithub = "AppPage"
+    libDesc = 'Android Library, Stack Page.'
+}
+//检查AndroidManifest.xml中的package
+dependencies {
+    api "org.jetbrains.kotlin:kotlin-stdlib"
+    api "org.jetbrains.kotlin:kotlin-reflect"
+    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.4.0'
+    implementation 'com.google.android.material:material:1.4.0'
+}
+apply from: "libcommon.gradle"
