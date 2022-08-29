@@ -4,7 +4,7 @@ plugins {
 }
 ext {
     nameGroup = "dev.entao.app"
-    nameVersion = "0.6.1"
+    nameVersion = "0.7.0"
     nameAF = "page"
     nameGithub = "AppPage"
     libDesc = 'Android Library, Stack Page.'
