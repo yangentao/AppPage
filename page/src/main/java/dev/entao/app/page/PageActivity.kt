@@ -17,17 +17,53 @@ import androidx.core.content.ContextCompat
 
 
 open class PageActivity : AppCompatActivity() {
-    private val permReq = this.registerForActivityResult(ActivityResultContracts.RequestPermission(), ::onPermReq)
-    private val permReqs = this.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions(), ::onPermReqs)
-    private val startActivityR = this.registerForActivityResult(ActivityResultContracts.StartActivityForResult(), ::onStartResult)
-    private var resultBlock: ((ActivityResult) -> Unit)? = null
-    private var permBlock: ((Boolean) -> Unit)? = null
-    private var permsBlock: ((Map<String, Boolean>) -> Unit)? = null
-
-
     lateinit var pageContainer: PageContainer
     lateinit var activityView: FrameLayout
         private set
+
+    private var resultCallback: ((ActivityResult) -> Unit)? = null
+    private var permCallback: ((Boolean) -> Unit)? = null
+    private var permListCallback: ((Map<String, Boolean>) -> Unit)? = null
+
+    private val permReq = this.registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+        val a = permCallback
+        permCallback = null
+        a?.invoke(it)
+    }
+    private val permReqList = this.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+        val a = permListCallback
+        permListCallback = null
+        a?.invoke(it)
+    }
+    private val resultReq = this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        val a = this.resultCallback
+        this.resultCallback = null
+        a?.invoke(it)
+    }
+
+    fun requestPermission(perm: String, block: (Boolean) -> Unit) {
+        this.permCallback = block
+        this.permReq.launch(perm)
+    }
+
+    fun requestPermissionList(perms: Set<String>, block: (Map<String, Boolean>) -> Unit) {
+        this.permListCallback = block
+        this.permReqList.launch(perms.toTypedArray())
+    }
+
+
+    fun startActivityResult(intent: Intent, block: (ActivityResult) -> Unit) {
+        resultCallback = block
+        resultReq.launch(intent)
+    }
+
+    fun withPermission(perm: String, block: (Boolean) -> Unit) {
+        if (this.hasPermission(perm)) {
+            block(true)
+            return
+        }
+        requestPermission(perm, block)
+    }
 
     open fun getInitPage(): Page? {
         return null
@@ -113,55 +149,14 @@ open class PageActivity : AppCompatActivity() {
     }
 
 
-
-    private fun onPermReq(ok: Boolean) {
-        val a = permBlock
-        permBlock = null
-        a?.invoke(ok)
-    }
-
-    private fun onPermReqs(map: Map<String, Boolean>) {
-        val a = permsBlock
-        permsBlock = null
-        a?.invoke(map)
-    }
-
-    private fun onStartResult(result: ActivityResult) {
-        val a = this.resultBlock
-        this.resultBlock = null
-        a?.invoke(result)
-    }
-
-    fun hasPerm(p: String): Boolean {
+    fun hasPermission(p: String): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this, p)
         } else {
             true
         }
     }
-    fun withPermission(perm: String, block: (Boolean) -> Unit) {
-        if (this.hasPerm(perm)) {
-            block(true)
-            return
-        }
-        requestPermission(perm, block)
-    }
 
-    fun requestPermission(perm: String, block: (Boolean) -> Unit) {
-        this.permBlock = block
-        this.permReq.launch(perm)
-    }
-
-    fun requestPermissions(perms: Set<String>, block: (Map<String, Boolean>) -> Unit) {
-        this.permsBlock = block
-        this.permReqs.launch(perms.toTypedArray())
-    }
-
-
-    fun startActivityResult(intent: Intent, block: (ActivityResult) -> Unit) {
-        resultBlock = block
-        startActivityR.launch(intent)
-    }
 
 }
 
