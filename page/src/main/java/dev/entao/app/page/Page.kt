@@ -32,6 +32,8 @@ abstract class Page(val activity: PageActivity) : LifecycleOwner {
         }
         setBackgroundColor(ResourcesCompat.getColor(activity.resources, resId, activity.theme))
     }
+    //for view name auto search
+    val rootContentView: View get() = pageView
 
 
     private val externalRegistry: LifecycleRegistry by lazy { LifecycleRegistry(this) }
