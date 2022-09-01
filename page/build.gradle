@@ -4,7 +4,7 @@ plugins {
 }
 ext {
     nameGroup = "dev.entao.app"
-    nameVersion = "0.7.1"
+    nameVersion = "0.7.2"
     nameAF = "page"
     nameGithub = "AppPage"
     libDesc = 'Android Library, Stack Page.'
@@ -15,6 +15,5 @@ dependencies {
     api "org.jetbrains.kotlin:kotlin-reflect"
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.0'
-    implementation 'com.google.android.material:material:1.4.0'
 }
 apply from: "libcommon.gradle"
